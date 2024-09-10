@@ -1,4 +1,6 @@
 ####BUG FIX 
+
+## Error = **foreign key violations**
 The errors you're encountering indicate that there are **foreign key violations** in the `PlaylistTrack` table. Specifically, some `TrackId` values that you're trying to insert into the `PlaylistTrack` table do not exist in the `Track` table. This is a common issue when data is inserted in the wrong order or if the `Track` table hasn't been fully populated before trying to insert records into `PlaylistTrack`.
 
 Here’s how to resolve this:
@@ -52,3 +54,8 @@ Here’s how to resolve this:
    After inserting the missing tracks, retry inserting the records into `PlaylistTrack`.
 
 By following these steps, you should be able to resolve the foreign key violations and successfully load the Chinook database. Let me know how it goes!
+
+###Commands
+\copy (select * FROM "Track" Where "Composer" = 'Queen') TO 'test.csv' WITH CSV DELIMITER ',' HEADER;
+\o test.json
+SELECT json_agg(t) FROM (SELECT * FROM "Track" WHERE "Composer" = 'Queen') t;
