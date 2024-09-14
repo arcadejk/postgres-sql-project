@@ -59,3 +59,73 @@ By following these steps, you should be able to resolve the foreign key violatio
 \copy (select * FROM "Track" Where "Composer" = 'Queen') TO 'test.csv' WITH CSV DELIMITER ',' HEADER;
 \o test.json
 SELECT json_agg(t) FROM (SELECT * FROM "Track" WHERE "Composer" = 'Queen') t;
+
+
+### Fix sql-psycopg2.py
+
+Sure! Here's your updated Python code with the ability to switch between different queries by uncommenting the relevant section:
+
+```python
+import psycopg2
+from psycopg2 import sql
+
+try:
+    # Connect to the "chinook" database
+    connection = psycopg2.connect(
+        dbname="chinook",
+        user="your_username",
+        password="your_password",
+        host="localhost",  # or your database host
+        port="5432"        # or your database port
+    )
+
+    # Build a cursor object
+    cursor = connection.cursor()
+
+    # Uncomment the query you want to test
+
+    # Query 1 - Select all records from the "Artist" table
+    # cursor.execute('SELECT * FROM "Artist"')
+
+    # Query 2 - Select only the "Name" column from the "Artist" table
+    # cursor.execute('SELECT "Name" FROM "Artist"')
+
+    # Query 3 - Select only "Queen" from the "Artist" table
+    cursor.execute('SELECT * FROM "Artist" WHERE "Name" = %s', ["Queen"])
+
+    # Query 4 - Select only by "ArtistId" #51 from the "Artist" table
+    # cursor.execute('SELECT * FROM "Artist" WHERE "ArtistId" = %s', [51])
+
+    # Query 5 - Select only the albums with "ArtistId" #51 from the "Album" table
+    # cursor.execute('SELECT * FROM "Album" WHERE "ArtistId" = %s', [51])
+
+    # Query 6 - Select all tracks where the composer is "Queen" from the "Track" table
+    # cursor.execute('SELECT * FROM "Track" WHERE "Composer" = %s', ["Queen"])
+
+    # Fetch the results (multiple)
+    results = cursor.fetchall()
+
+    # Fetch the result (single)
+    # results = cursor.fetchone()
+
+    # Print results
+    for result in results:
+        print(result)
+
+except psycopg2.Error as e:
+    print(f"Database error: {e}")
+
+finally:
+    # Close the cursor and connection
+    if cursor:
+        cursor.close()
+    if connection:
+        connection.close()
+```
+
+### Instructions:
+1. **Replace** `"your_username"` and `"your_password"` with your PostgreSQL credentials.
+2. **Uncomment** the query you want to run by removing the `#` at the start of the relevant `cursor.execute()` line.
+3. **Run** the script to execute the selected query and print the results.
+
+Feel free to modify the script as needed for your use case!
